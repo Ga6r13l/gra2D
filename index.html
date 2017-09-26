@@ -1,0 +1,233 @@
+<html>  
+<head>
+<title>tileEngine - Isometric</title>
+<style >
+
+#main{
+position:absolute;
+-webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s;
+	-ms-transition: all 0.5s;
+	-o-transition: all 0.5s;
+	transition: all 0.5s;
+	transform:scale(1.5); -webkit-transform:scale(1.5); 
+-moz-transform:scale(1.5); -o-transform:scale(1.5); 
+}
+
+.rama{
+display:block;
+width:500px;
+background: black;
+height:500px;
+border: 10px solid black;
+position:absolute;
+margin:auto;
+overflow:hidden;
+}
+</style>
+<script type="text/javascript">
+var you; 
+var time = 0;
+
+var playerX = 5;
+var playerY = 5;
+
+var map = Array( 
+	[1,0,1,1,1,1,1,1,1,1,1,1,1,1,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,5,0,0,0,0,4,4,4,4,4,4,4,4,4],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],	
+	[1,0,0,6,6,6,6,0,0,0,0,0,0,0,1],
+	[1,0,0,6,6,6,6,0,0,0,0,0,0,0,1],
+	[1,0,0,6,6,6,6,0,0,0,0,0,0,0,1],
+	[1,0,0,6,6,6,6,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+	
+	
+);
+
+
+var objectMap = Array( 
+	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,6,0,6,6,0,0,0,0,0,0,0,1],
+	[1,0,0,6,0,0,6,0,0,0,0,0,0,0,1],
+	[1,0,0,6,0,0,6,0,0,0,0,0,0,0,1],
+	[1,0,0,6,6,6,6,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+	
+);
+var tileDict = Array("2.png","2.png","1.png","1.png","1.png","6.png","6.png","1.png");
+var charDict = Array("postac.png");
+var objectDict = Array("3.png","1.png","1.png","1.png","1.png","b6.png"); 
+var objectImg = new Array();
+var charImg = new Array();
+
+var tileImg = new Array();
+var loaded = 0;
+var loadTimer;
+var ymouse;
+var xmouse;
+
+function loadImg(){ 
+	for(var i=0;i<tileDict.length;i++){	
+		tileImg[i] = new Image();
+		tileImg[i].src = tileDict[i];
+		tileImg[i].onload = function(){
+			loaded++;
+		}
+	}
+	i = 0;
+	for(var i=0;i<charDict.length;i++){
+		charImg[i] = new Image();
+		charImg[i].src = charDict[i];
+		charImg[i].onload = function(){
+			loaded++;
+		}
+	}
+	i = 0;
+	for(var i=0;i<objectDict.length;i++){
+		objectImg[i] = new Image();
+		objectImg[i].src = objectDict[i];
+		objectImg[i].onload = function(){
+			loaded++;
+		}
+	}
+}
+
+function checkKeycode(event) { 
+	var keycode;
+	if(event == null) {
+		keyCode = window.event.keyCode;
+	} else {
+		keyCode = event.keyCode;
+	}
+	
+	switch(keyCode) {
+		case 38:
+			if(!objectMap[playerX-1][playerY] > 0){
+				playerX--;
+			}
+			break;
+		case 40: 
+			if(!objectMap[playerX+1][playerY] > 0){
+				playerX++;
+			}
+			break;
+		case 39: 
+			if(!objectMap[playerX][playerY+1] > 0){
+				playerY++;
+			}
+			break;
+		case 37: 
+			if(!objectMap[playerX][playerY-1] > 0){
+				playerY--;
+			}
+			break;
+		default:
+			break;
+	}
+	tmpEle = document.getElementById("coords");
+	tmpCoord = playerX + ", " + playerY;
+	tmpEle.value = tmpCoord;
+}
+
+function loadAll(){ 
+	if(loaded == tileDict.length + charDict.length + objectDict.length){
+		clearInterval(loadTimer);
+		loadTimer = setInterval(gameUpdate,100);
+	}
+}
+ 
+function drawMap(){ 
+	var tileH = 32;
+	var tileW = 32;
+	canva = document.getElementById('main');
+	canva .width = (map.length - 1) * tileH ;
+	canva .height = map[0].length * tileH;
+	canva .style.left = -(playerY * 32) + canva.width / 2  + "px"; 
+	canva .style.top = -(playerX * 32) + canva.width / 2 + "px"; 
+	
+	for(i=0;i<map.length;i++){
+		for(j=0;j<map[i].length;j++){
+			var drawTile= map[i][j];
+			var drawObj = objectMap[i][j];
+			var xpos = j*tileH;
+			var ypos = i*tileH;
+			
+			
+			ctx.drawImage(tileImg[drawTile],xpos,ypos);
+			
+			if(drawObj){
+				if (drawObj > 0) {
+					ctx.drawImage(objectImg[drawObj-1],xpos,ypos-(objectImg[drawObj-1].height-32));
+				}
+			}
+			if(i == playerX && j == playerY){
+				you = ctx.drawImage(charImg[0],xpos,ypos-(charImg[0].height-32));
+			}
+		}
+	}
+}
+ 
+function init(){
+	setInterval('updateClock()',1000);
+	ctx = document.getElementById('main').getContext('2d');
+    
+	loadImg();
+	loadTimer = setInterval(loadAll,100);
+
+	document.onkeydown = checkKeycode;
+	tmpEle = document.getElementById("coords");
+	tmpCoord = playerX + ", " + playerY;
+	tmpEle.value = tmpCoord;
+}
+
+function gameUpdate() { 
+	ctx.clearRect(0,0,904,460);	
+	ctx.fillStyle = "rgba(255, 255, 255, 1.0)"; 
+	drawMap();
+	
+}
+
+function updateClock() {
+	time++;
+	document.getElementById("time").value = time;
+}
+</script>
+</head> 
+<body onload="init();">	
+	<div id="hud">
+		Co-ords: <input disabled type="text" id="coords" value="" />
+		Time: <input disabled type="text" id="time" value="" /> 
+		<br />
+	</div>
+	<div id="status">
+		
+	</div>
+	<div id="infoKey">
+		
+	</div>
+	<div class="rama">
+	<canvas id="main"  style="border:1px solid black;" width="684" height="484">
+		<h1 style="color: white; font-size: 24px;">NO HTML5</h1>
+	</canvas>
+	</div>
+</body> 
+</html>
